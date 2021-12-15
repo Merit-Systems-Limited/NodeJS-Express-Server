@@ -1,4 +1,4 @@
-# NodeJS-Express-Server
+# NodeJS+Express Server
 
 This is a Node JS + Express Server. This is to aid developers get started with nodejs express server easily
 
