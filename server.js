@@ -2,10 +2,15 @@ const express  = require("express");
 const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { logger } = require('./middleware/logger');
 dotenv.config();
 const server = express();
 server.use(express.json());
 server.use(cors());
+
+// Custom Middleware logger
+server.use(logger);
+
 const PORT = process.env.PORT || 5222;
 // encoding middleware inbuilt to express
 server.use(express.urlencoded({ extended: false }));
