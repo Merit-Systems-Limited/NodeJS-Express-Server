@@ -16,11 +16,14 @@ const port = process.env.PORT || 5222;
 
 const serveFile = async (filePath, contentType, response) => {
     try {
-        const data = await fsPromises.readFile(filePath, 'utf-8');
+        const rawData = await fsPromises.readFile(filePath, !contentType.includes('image') ? 'utf-8' : '');
+        const data = contentType === 'application/json' ? JSON.parse(rawData) : rawData;
         response.writeHead(200,{
             'Content-Type' : contentType
         });
-        response.end(data);
+        response.end(
+            contentType === 'application/json' ? JSON.stringify(data) : data
+        );
     } catch (error) {
         console.error(error);
         response.statusCode = 500;
