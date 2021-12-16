@@ -12,7 +12,11 @@ server.use(cors());
 
 server.get('/', (req, res) => {
     console.log('Welcome Brian Koech');
-    res.sendFile('./views/index.html',{ root: __dirname });
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+server.get('/new', (req, res) => {
+    console.log('Welcome Brian Koech');
+    res.sendFile(path.join(__dirname, 'views', 'new-page.html'));
 });
 
 server.listen(PORT, () => console.log(`Howdy, you server is running on : http://localhost:${PORT}`));
