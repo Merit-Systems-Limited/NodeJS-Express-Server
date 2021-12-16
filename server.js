@@ -21,11 +21,21 @@ server.get('/new-page(.html)?', (req, res) => {
 server.get('/old-page(.html)?', (req, res) => {
     res.redirect(301, '/new-page.html');
 });
+
+
+// Route handlers
+server.get('/hello(.html)?', (req, res, next) => {
+    console.log('Attempted to load hello.html');
+    next()
+},(req, res) => {
+    res.send('Hello World');
+});
+
 // Custom 404
 server.get('/*', (req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
-server.listen(PORT, () => console.log(`Howdy, you server is running on : http://localhost:${PORT}`));
 
+server.listen(PORT, () => console.log(`Howdy, you server is running on : http://localhost:${PORT}`));
 
 module.exports.server = server;
