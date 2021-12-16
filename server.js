@@ -5,17 +5,29 @@ const dotenv = require('dotenv');
 const { logger } = require('./middleware/logger');
 dotenv.config();
 const server = express();
-server.use(express.json());
-server.use(cors());
+const PORT = process.env.PORT || 5222;
 
 // Custom Middleware logger
 server.use(logger);
-
-const PORT = process.env.PORT || 5222;
-// encoding middleware inbuilt to express
+// Cors
+const whiteList = ['http://localhost:4200', 'http://localhost:5222','http://127.0.0.1:5222'];
+// Set Cors Options
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (whiteList.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else{
+            callback(new Error('Not Allowed By CORS'));
+        }
+    },
+    optionsSuccessStatus : 200
+}
+server.use(cors(corsOptions));
+// Encoding middleware inbuilt to express
 server.use(express.urlencoded({ extended: false }));
 // JSON Middleware
 server.use(express.json());
+
 // Serving static files Middleware
 server.use(express.static(path.join(__dirname, '/public')));
 
@@ -23,6 +35,7 @@ server.get('^/$|/index(.html)?', (req, res) => {
     console.log('Welcome Brian Koech');
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
+
 server.get('/new-page(.html)?', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'new-page.html'));
 });
