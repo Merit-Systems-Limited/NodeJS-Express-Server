@@ -2,6 +2,7 @@ const express  = require("express");
 const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const res = require("express/lib/response");
 dotenv.config();
 const PORT = process.env.PORT || 5222;
 
@@ -11,6 +12,7 @@ server.use(cors());
 
 server.get('/', () => {
     console.log('Welcome Brian Koech');
+    res.send('Hello Brian');
 });
 
 server.listen(PORT, () => console.log(`Howdy, you server is running on : http://localhost:${PORT}`));
