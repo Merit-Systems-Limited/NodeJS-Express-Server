@@ -3,11 +3,16 @@ const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
-const PORT = process.env.PORT || 5222;
-
 const server = express();
 server.use(express.json());
 server.use(cors());
+const PORT = process.env.PORT || 5222;
+// encoding middleware inbuilt to express
+server.use(express.urlencoded({ extended: false }));
+// JSON Middleware
+server.use(express.json());
+// Serving static files Middleware
+server.use(express.static(path.join(__dirname, '/public')));
 
 server.get('^/$|/index(.html)?', (req, res) => {
     console.log('Welcome Brian Koech');
@@ -22,7 +27,6 @@ server.get('/old-page(.html)?', (req, res) => {
     res.redirect(301, '/new-page.html');
 });
 
-
 // Route handlers
 server.get('/hello(.html)?', (req, res, next) => {
     console.log('Attempted to load hello.html');
@@ -30,7 +34,6 @@ server.get('/hello(.html)?', (req, res, next) => {
 },(req, res) => {
     res.send('Hello World');
 });
-
 
 const one = (req, res, next)=> {
     console.log('one');
@@ -46,6 +49,7 @@ const three = (req, res) => {
 }
 // Route chaining
 server.get('/chain(.html)?', [one, two, three]); 
+
 // Custom 404
 server.get('/*', (req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
