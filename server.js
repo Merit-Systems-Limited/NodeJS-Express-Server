@@ -11,21 +11,28 @@ const { contentType } = require('express/lib/response');
 const { response } = require('express');
 const res = require('express/lib/response');
 dotenv.config();
-
+// Initialize the emitter
+const myEmitter =  new Emitter();
 const port = process.env.PORT || 5222;
+myEmitter.on('log', (msg, fileName) => logEvents(msg, fileName));
+
 
 const serveFile = async (filePath, contentType, response) => {
     try {
         const rawData = await fsPromises.readFile(filePath, !contentType.includes('image') ? 'utf-8' : '');
         const data = contentType === 'application/json' ? JSON.parse(rawData) : rawData;
-        response.writeHead(200,{
+        response.writeHead(
+            filePath.includes('404.html') ? 404: 200
+            ,{
             'Content-Type' : contentType
-        });
+            }
+        );
         response.end(
             contentType === 'application/json' ? JSON.stringify(data) : data
         );
     } catch (error) {
         console.error(error);
+        myEmitter.emit('log', `${err.name}:${err.message}`, 'errorLog.txt'); 
         response.statusCode = 500;
         res.end();
     }
@@ -33,6 +40,8 @@ const serveFile = async (filePath, contentType, response) => {
 
 server = http.createServer((req, res) => {
     console.log(req.url, req.method);
+    // Emit Event
+    myEmitter.emit('log', `${req.url}\t${req.method}`, 'reqLog.txt'); 
     const extension = path.extname(req.url)
     let contentType;
 
@@ -71,7 +80,6 @@ server = http.createServer((req, res) => {
     if(!extension && req.url.slice(-1) !== '/') filePath += '.html';
 
     const fileExists = fs.existsSync(filePath);
-
     if (fileExists) {
         // Serve the file
         serveFile(filePath, contentType, res);
@@ -93,15 +101,6 @@ server = http.createServer((req, res) => {
     }
 });
 
-
-
 server.listen(port, () => {
     console.log(`Server running on port : http://localhost:${port}`);
 });
-
-// Initialize the emitter
-const myEmitter =  new Emitter();
-
-// myEmitter.on('log', (msg) => logEvents(msg));
-// // Emit Event
-// myEmitter.emit('log', 'Log Event Emitted'); 
